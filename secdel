@@ -32,6 +32,3 @@ elif [[ "${LVL}" -eq 2 ]];then
   else
     echo 'Secure deletion canceled.';
 fi
-
-
-
