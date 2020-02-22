@@ -1,10 +1,31 @@
 #!/bin/bash
 
-if [[ -d "${1}" ]];then
-  SUBFILES=$(find "${1}" | wc -l);
-  WARNMSG="WARNING: The will perform the forensic and irreversible removal of ${1} and all ${SUBFILES} sub files and folders.";
+FILE="${1}";
+USER=`whoami`;
+
+if [[ "${USER}" != "root" ]]; then
+  echo -e "Error: This command must be run as sudo user.\nPlease run again using the following command: \n";
+  echo -e "\t\tsudo secdel <filename|foldername>\n";
+  exit;
+fi
+
+if [[ "${FILE}" == "" ]]; then
+  echo -e "Error: No file or folder specified. Please run again using the following command: \n";
+  echo -e "\t\tsudo secdel <filename|foldername>\n";
+  exit;
+fi
+
+
+function delete {
+
+cd `pwd`;
+echo -e "Securely delete $(pwd)/${FILE}\n";
+
+if [[ -d "${FILE}" ]];then
+  SUBFILES=$(find "${FILE}" | wc -l);
+  WARNMSG="WARNING: The will perform the forensic and irreversible removal of ${FILE} and all ${SUBFILES} sub files and folders.";
 else
-  WARNMSG="WARNING: This will perform the forensic and irreversible removal of file ${1}.";
+  WARNMSG="WARNING: This will perform the forensic and irreversible removal of file ${FILE}.";
 fi
 
 echo ""
@@ -15,10 +36,10 @@ echo "[1] Shredder (US DoD compliant 7-pass overwrite)";
 echo "[2] SUPER Shredder (Gutmann 35-pass overwrite)";
 read -p "Enter option [1,2] (press any other key to cancel): " LVL
 
-if [ -z ${1} ]; then
+if [ -z ${FILE} ]; then
   DIR="./";
 else
-  DIR="${1}";
+  DIR="${FILE}";
 fi;
 
 if [[ "${LVL}" -eq 1 ]];then
@@ -32,3 +53,7 @@ elif [[ "${LVL}" -eq 2 ]];then
   else
     echo 'Secure deletion canceled.';
 fi
+
+}
+
+delete;
